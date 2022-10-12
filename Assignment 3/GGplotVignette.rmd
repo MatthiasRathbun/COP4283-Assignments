@@ -1,0 +1,109 @@
+---
+title: "GGplot Vignette"
+author: "Matthias Rathbun"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Scatter Plot of Engine Displacement vs MPG with LOESS Line Imposed
+
+```{r}
+library(ggplot2)
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes()) +
+  geom_smooth(se = FALSE) +
+  labs(
+    x = "Engine displacement (L)",
+    y = "Highway fuel economy (mpg)"
+  )
+```
+
+## Add Color by Car Type
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  geom_smooth(se = FALSE) +
+  labs(
+    x = "Engine displacement (L)",
+    y = "Highway fuel economy (mpg)",
+    colour = "Car type"
+  )
+```
+
+## Add Best in Class Annotation
+```{r}
+library(dplyr) 
+best_in_class <- mpg %>%
+  group_by(class) %>%
+  filter(row_number(desc(hwy)) == 1)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  geom_point(size = 3, shape = 1, data = best_in_class) +
+  geom_smooth(se = FALSE) +
+  ggrepel::geom_label_repel(aes(label = model), data = best_in_class) +
+    labs(
+    x = "Engine displacement (L)",
+    y = "Highway fuel economy (mpg)",
+    colour = "Car type")
+```
+
+## Add annotation to Corner of Plot
+```{r}
+label <- tibble(
+  displ = Inf,
+  hwy = Inf,
+  label = "Increasing engine size is \nrelated to decreasing fuel economy."
+)
+library(dplyr) 
+best_in_class <- mpg %>%
+  group_by(class) %>%
+  filter(row_number(desc(hwy)) == 1)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  geom_smooth(se = FALSE) +
+  geom_point(size = 3, shape = 1, data = best_in_class) +
+  ggrepel::geom_label_repel(aes(label = model), data = best_in_class) +
+  geom_text(aes(label = label), data = label, vjust = "top", hjust = "right") +
+    labs(
+    x = "Engine displacement (L)",
+    y = "Highway fuel economy (mpg)",
+    colour = "Car type")
+```
+
+## Manipulate Ticks and Legend Position
+```{r}
+label <- tibble(
+  displ = Inf,
+  hwy = Inf,
+  label = "Increasing engine size is \nrelated to decreasing fuel economy."
+)
+library(dplyr) 
+best_in_class <- mpg %>%
+  group_by(class) %>%
+  filter(row_number(desc(hwy)) == 1)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  geom_point(size = 3, shape = 1, data = best_in_class) +
+  geom_smooth(se = FALSE) +
+  ggrepel::geom_label_repel(aes(label = model), data = best_in_class) +
+  geom_text(aes(label = label), data = label, vjust = "top", hjust = "right") +
+  scale_y_continuous(breaks = seq(15, 40, by = 5)) +
+  theme(legend.position = "left") +
+    labs(
+    x = "Engine displacement (L)",
+    y = "Highway fuel economy (mpg)",
+    colour = "Car type")
+```
+
+## Saving Plot
+```{r}
+ggsave("my-plot.pdf")
+```

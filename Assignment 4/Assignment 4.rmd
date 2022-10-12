@@ -1,0 +1,23 @@
+---
+title: "Assignment 4"
+author: "Matthias Rathbun"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+df <-read.csv("tiktok.csv", header=TRUE)
+library(stringr)
+df$Subscribers <- as.numeric(str_replace_all(df$Subscribers, setNames(c("e3", "e6"), c("K", "M"))))
+df$Views.avg. <- as.numeric(str_replace_all(df$Views.avg., setNames(c("e3", "e6"), c("K", "M"))))
+df$Likes.avg. <- as.numeric(str_replace_all(df$Likes.avg., setNames(c("e3", "e6"), c("K", "M"))))
+df$Comments.avg. <- as.numeric(str_replace_all(df$Comments.avg., setNames(c("e3", "e6"), c("K", "M"))))
+df$Shares.avg. <- as.numeric(str_replace_all(df$Shares.avg., setNames(c("e3", "e6"), c("K", "M"))))
+library(GGally)
+ggcorr(df[4:8], label = TRUE, label_round = 3)
+```
+The Highest Correlation is Between Views and Likes
