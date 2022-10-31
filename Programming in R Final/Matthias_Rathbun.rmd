@@ -1,0 +1,86 @@
+---
+title: "Programming R Final"
+author: "Matthias Rathbun"
+date: "2022-10-30"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,fig.width = 20,fig.height = 20)
+```
+
+
+# Set up the work space
+
+First I want to reduce the number of displayed digits.
+
+```{r}
+options(
+  digits = 4
+)
+```
+
+# Import Data
+
+Import dataset as a dataframe
+
+```{r}
+Wine <- read.csv(
+  file = "winequality-red.csv",
+  header = TRUE
+)
+```
+
+## Check Dataset Structure for tidyness
+
+```{r}
+head(Wine[,-1],10)
+```
+ Data is Clean and Tidy, each column is a feature, each row is a unique observation, and every cell has a single value.
+ 
+# Visualize Data
+
+## Corr Plot
+
+I would Like to See the correlations between features as this is a regression problem
+```{r}
+library(GGally)
+ggcorr(Wine, label = TRUE, label_round = 3)
+ggsave("Corrplot.pdf")
+```
+
+## Pairplot
+
+```{r}
+ggpairs(Wine)
+ggsave("pairplot.pdf")
+```
+
+Usefull for seing distributions and for correlations between variables.
+
+# Scatter Plot with Loess
+
+```{r}
+ggplot(Wine, aes(fixed.acidity, density)) +
+  geom_point(aes(colour = quality)) +
+  geom_smooth(se = FALSE) +
+  labs(
+    x = "Acidity",
+    y = "Density",
+    colour = "Wine Quality"
+  )
+ggsave("scatter.pdf")
+```
+This shows some trend between Acidity and density of wine. These were chosen as they already had high correlation based on the corrplot
+
+# Principle Component Analysis
+
+```{r}
+library(ggfortify)
+pca_res <- prcomp(Wine, scale. = TRUE)
+
+autoplot(pca_res, data = Wine , colour = 'quality', size = 4)
+
+ggsave("pca.pdf")
+```
+Reduce 11 Features to 2 axes the higher quality wines seem to be at the bottom left part of the plot. Lower quality wines are clustered together.
